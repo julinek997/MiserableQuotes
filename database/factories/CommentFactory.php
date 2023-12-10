@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Post;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Comment>
@@ -18,6 +19,7 @@ class CommentFactory extends Factory
     {
         return [
             'comment_body' => fake()->realText(),
+            'post_id' => Post::factory(),
         ];
     }
 }
