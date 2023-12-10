@@ -16,5 +16,7 @@ class TagTableSeeder extends Seeder
         $tag1 = new Tag;
         $tag1->tag_body = "nice";
         $tag1->save();
+
+        Tag::factory()->count(10)->create();
     }
 }
