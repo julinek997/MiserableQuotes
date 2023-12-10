@@ -15,6 +15,7 @@ class PostTableSeeder extends Seeder
     {
         $post1 = new Post;
         $post1->post_body="meow meow";
+        $post1->user_id = 1;
         $post1->save();
 
         Post::factory()->count(10)->create();

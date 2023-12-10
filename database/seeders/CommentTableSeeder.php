@@ -16,6 +16,7 @@ class CommentTableSeeder extends Seeder
         $comment1 = new Comment;
         $comment1->comment_body="very nice";
         $comment1->post_id = 1;
+        $comment1->user_id = 1;
         $comment1->save();
 
         Comment::factory()->count(10)->create();

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
@@ -18,6 +19,7 @@ class PostFactory extends Factory
     {
         return [
             'post_body' => fake()->realText(),
+            'user_id' => User::factory(),
         ];
     }
 }
