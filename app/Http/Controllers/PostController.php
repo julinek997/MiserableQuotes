@@ -21,7 +21,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -29,7 +29,17 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'post_body' => 'required|max:255'
+        ]);
+    
+        $post = new Post;
+        $post->post_body = $validatedData['post_body'];
+        $post->user_id = auth()->id();
+        $post->save();
+    
+        session()->flash('message', 'Post was created.');
+        return redirect()->route('posts.index');
     }
 
     /**

@@ -15,7 +15,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div class="min-h-screen" style="background-color: #aca7c8;">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -29,7 +29,25 @@
 
             <!-- Page Content -->
             <main>
+            @if ($errors->any())
+                <div>
+                    Errors:
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            @if (session('message'))
+            <div>
+                <p><b>{{ session('message') }}</b></p>
+            </div>
+            @endif
+
+                <div>
                 @yield('content')
+                </div>
             </main>
         </div>
     </body>
