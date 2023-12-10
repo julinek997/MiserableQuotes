@@ -68,10 +68,19 @@ class PostController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     */
+ * Remove the specified resource from storage.
+ */
     public function destroy(string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+
+        if (auth()->id() !== $post->user_id) {
+            return response()->json(['error' => 'You do not have permission to delete this post.'], 403);
+        }
+
+        $post->delete();
+
+        return redirect()->route('posts.index')->with('message', 'Post was deleted.');
     }
+
 }
