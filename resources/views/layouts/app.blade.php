@@ -48,6 +48,7 @@
                 <div>
                 @yield('content')
                 </div>
+                @yield('comments')
             </main>
         </div>
     </body>

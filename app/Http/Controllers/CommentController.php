@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Comment;
 
 class CommentController extends Controller
 {
@@ -27,7 +28,21 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'comment_body' => 'required|max:255',
+            'post_id' => 'required|exists:posts,id',
+        ]);
+
+        $comment = new Comment;
+        $comment->comment_body = $request->input('comment_body');
+        $comment->user_id = auth()->id();
+        $comment->post_id = $request->input('post_id');
+        $comment->save();
+
+        return response()->json([
+            'success' => true,
+            'comment' => $comment,
+        ]);
     }
 
     /**
