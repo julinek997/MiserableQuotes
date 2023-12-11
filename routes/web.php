@@ -33,6 +33,8 @@ Route::get('posts/{id}', [PostController::class, 'show']);
 
 Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
 
+Route::get('posts/tag/{tag}', [PostController::class, 'indexByTag'])->name('posts.indexByTag');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

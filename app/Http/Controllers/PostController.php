@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
 
 class PostController extends Controller
 {
@@ -21,7 +24,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        $tags = Tag::all();
+        return view('posts.create', compact('tags'));
     }
 
     /**
@@ -30,13 +34,29 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'post_body' => 'required|max:255'
+            'post_body' => 'required|max:255',
+            'tags' => 'array', 
+            'new_tags' => 'nullable|string', 
         ]);
     
         $post = new Post;
         $post->post_body = $validatedData['post_body'];
         $post->user_id = auth()->id();
         $post->save();
+    
+        if (!empty($validatedData['tags'])) {
+            $post->tags()->attach($validatedData['tags']);
+        }
+    
+        if (!empty($validatedData['new_tags'])) {
+            $newTags = explode(',', $validatedData['new_tags']);
+    
+            foreach ($newTags as $tagName) {
+                $tagName = Str::slug(trim($tagName)); 
+                $tag = Tag::firstOrCreate(['tag_body' => $tagName]);
+                $post->tags()->attach($tag->id);
+            }
+        }
     
         session()->flash('message', 'Post was created.');
         return redirect()->route('posts.index');
@@ -81,6 +101,13 @@ class PostController extends Controller
         $post->delete();
 
         return redirect()->route('posts.index')->with('message', 'Post was deleted.');
+    }
+
+    public function indexByTag(Tag $tag)
+    {
+        $posts = $tag->posts()->paginate(10);
+
+        return view('posts.index', ['posts' => $posts]);
     }
 
 }
