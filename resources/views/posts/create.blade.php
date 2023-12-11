@@ -3,9 +3,11 @@
 @section('title', 'Create Post')
 
 @section('content')
-    <form method="POST" action="{{ route('posts.store') }}">
+    <form method="POST" action="{{ route('posts.store') }}" enctype="multipart/form-data">
         @csrf
+
         <p>Post: <input type="text" name="post_body"></p>
+
         <p>Tags: 
             <select name="tags[]" multiple>
                 @foreach($tags as $tag)
@@ -13,7 +15,11 @@
                 @endforeach
             </select>
         </p>
+
         <p>New Tags (comma-separated): <input type="text" name="new_tags"></p>
+
+        <p>Image: <input type="file" name="image"></p>
+
         <input type="submit" value="Submit">
         <a href="{{ route('posts.index') }}">Cancel</a>
     </form>

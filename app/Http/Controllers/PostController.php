@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 
 class PostController extends Controller
@@ -37,11 +38,18 @@ class PostController extends Controller
             'post_body' => 'required|max:255',
             'tags' => 'array', 
             'new_tags' => 'nullable|string', 
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
     
         $post = new Post;
         $post->post_body = $validatedData['post_body'];
         $post->user_id = auth()->id();
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
+            $post->image = $imagePath;
+        }
+        
         $post->save();
     
         if (!empty($validatedData['tags'])) {
@@ -87,6 +95,7 @@ class PostController extends Controller
     {
         $validatedData = $request->validate([
             'post_body' => 'required|max:255',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
     
         $post = Post::findOrFail($id);
@@ -98,6 +107,18 @@ class PostController extends Controller
         $post->update([
             'post_body' => $validatedData['post_body'],
         ]);
+
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+    
+            $imagePath = $request->file('image')->store('images', 'public');
+            $post->image = $imagePath;
+        }
+    
+        $post->save();
     
         session()->flash('message', 'Post was updated.');
         return redirect()->route('posts.show', $post->id);
