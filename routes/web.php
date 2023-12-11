@@ -46,6 +46,8 @@ Route::patch('/posts/{id}', [PostController::class, 'update'])->name('posts.upda
 
 Route::get('posts/{id}', [PostController::class, 'show'])->name('posts.show');
 
+Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

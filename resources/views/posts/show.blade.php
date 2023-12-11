@@ -23,6 +23,9 @@
             @foreach($post->comments as $comment)
                 <li>
                     {{ $comment->comment_body }} - <a href="{{ route('profile.show', ['id' => $comment->user->id]) }}">{{ $comment->user->name }}</a>
+                    @if(auth()->id() === $comment->user_id)
+                        <button class="delete-comment" data-comment-id="{{ $comment->id }}">Delete</button>
+                    @endif
                 </li>
             @endforeach
         </ul>
@@ -39,8 +42,10 @@
                 document.addEventListener('DOMContentLoaded', function () {
                     const commentForm = document.getElementById('comment-form');
                     const commentList = document.getElementById('comment-list');
+                    const userId = {{ auth()->id() }}; // Pass the authenticated user ID to JavaScript
 
                     commentForm.addEventListener('submit', function (e) {
+                        e.preventDefault();
 
                         const formData = new FormData(commentForm);
                         fetch('{{ route('comments.store') }}', {
@@ -54,7 +59,13 @@
                             .then(data => {
                                 if (data.success) {
                                     const newComment = document.createElement('li');
-                                    newComment.textContent = data.comment.comment_body + ' - ' + data.comment.user.name;
+                                    newComment.innerHTML = `${data.comment.comment_body} - <a href="/profile/${data.comment.user.id}">${data.comment.user.name}</a>`;
+                                    
+                                    // Include delete button if the authenticated user is the owner of the comment
+                                    if (userId === data.comment.user.id) {
+                                        newComment.innerHTML += ` <button class="delete-comment" data-comment-id="${data.comment.id}">Delete</button>`;
+                                    }
+
                                     commentList.appendChild(newComment);
 
                                     commentForm.reset();
@@ -63,6 +74,30 @@
                                 }
                             })
                             .catch(error => console.error(error));
+                    });
+
+                    // Add this code inside the existing 'DOMContentLoaded' event listener
+
+                    commentList.addEventListener('click', function (e) {
+                        if (e.target.tagName === 'BUTTON' && e.target.classList.contains('delete-comment')) {
+                            const commentId = e.target.dataset.commentId;
+
+                            fetch(`{{ route('comments.destroy', '') }}/${commentId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-Token': '{{ csrf_token() }}',
+                                },
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        e.target.closest('li').remove();
+                                    } else {
+                                        console.error(data.error);
+                                    }
+                                })
+                                .catch(error => console.error(error));
+                        }
                     });
                 });
             </script>
