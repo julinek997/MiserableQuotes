@@ -5,7 +5,7 @@
 @section('content')
 <ul>
     <li>{{ $post->post_body }}</li>
-    <li>Posted by: {{ $post->user->name }}</li>
+    <li>Posted by: <a href="{{ route('profile.show', ['id' => $post->user->id]) }}">{{ $post->user->name }}</a></li>
     <li>
         Tags:
         @foreach ($post->tags as $tag)
@@ -21,7 +21,10 @@
     <h2>Comments</h2>
     <ul id="comment-list">
         @foreach($post->comments as $comment)
-        <li>{{ $comment->comment_body }} - {{ $comment->user->name }}</li>
+        <li>
+            {{ $comment->comment_body }} - <a href="{{ route('profile.show', ['id' => $comment->user->id]) }}">{{
+                $comment->user->name }}</a>
+        </li>
         @endforeach
     </ul>
 

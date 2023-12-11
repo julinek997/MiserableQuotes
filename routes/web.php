@@ -38,6 +38,8 @@ Route::get('posts/tag/{tag}', [PostController::class, 'indexByTag'])->name('post
 
 Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
 
+Route::get('/profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

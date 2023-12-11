@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -56,5 +57,14 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function show(string $id)
+    {
+        $user = User::findOrFail($id);
+        $posts = $user->posts;
+        $comments = $user->comments;
+
+        return view('profile.show', compact('user', 'posts', 'comments'));
     }
 }
