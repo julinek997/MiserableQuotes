@@ -40,6 +40,12 @@ Route::post('/comments', [CommentController::class, 'store'])->name('comments.st
 
 Route::get('/profile/{id}', [ProfileController::class, 'show'])->name('profile.show');
 
+Route::get('/posts/{id}/edit', [PostController::class, 'edit'])->name('posts.edit');
+
+Route::patch('/posts/{id}', [PostController::class, 'update'])->name('posts.update');
+
+Route::get('posts/{id}', [PostController::class, 'show'])->name('posts.show');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

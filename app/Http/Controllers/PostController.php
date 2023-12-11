@@ -65,7 +65,7 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         $post = Post::findOrFail($id);
         return view('posts.show', ['post'=> $post]);
@@ -74,19 +74,34 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        return view('posts.edit', compact('post'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $validatedData = $request->validate([
+            'post_body' => 'required|max:255',
+        ]);
+    
+        $post = Post::findOrFail($id);
+    
+        if (auth()->id() !== $post->user_id) {
+            return response()->json(['error' => 'You do not have permission to edit this post.'], 403);
+        }
+    
+        $post->update([
+            'post_body' => $validatedData['post_body'],
+        ]);
+    
+        session()->flash('message', 'Post was updated.');
+        return redirect()->route('posts.show', $post->id);
     }
-
     /**
  * Remove the specified resource from storage.
  */
