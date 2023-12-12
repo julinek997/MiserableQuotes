@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Comment;
+use App\Notifications\CommentNotification;
+use Illuminate\Support\Facades\Notification;
 
 class CommentController extends Controller
 {
@@ -26,6 +28,7 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         $request->validate([
@@ -38,6 +41,9 @@ class CommentController extends Controller
         $comment->user_id = auth()->id();
         $comment->post_id = $request->input('post_id');
         $comment->save();
+
+        Notification::route('mail', $comment->post->user->email)
+            ->notify(new CommentNotification($comment));
 
         return response()->json([
             'success' => true,
