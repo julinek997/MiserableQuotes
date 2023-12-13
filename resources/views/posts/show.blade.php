@@ -5,7 +5,8 @@
 @section('content')
 <ul>
     <li>{{ $post->post_body }}</li>
-    <li>Posted by: <a href="{{ route('profile.show', ['id' => $post->user->id]) }}">{{ $post->user->name }}</a></li>
+    <li>Posted by: <a href="{{ route('profile.show', ['id' => $post->user->id]) }}">
+            {{ $post->user->name }}</a></li>
     <li>
         Tags:
         @foreach ($post->tags as $tag)
@@ -27,7 +28,8 @@
     <ul id="comment-list">
         @foreach($post->comments as $comment)
         <li>
-            {{ $comment->comment_body }} - <a href="{{ route('profile.show', ['id' => $comment->user->id]) }}">{{
+            {{ $comment->comment_body }} - <a href="{{ route('profile.show', 
+                ['id' => $comment->user->id]) }}">{{
                 $comment->user->name }}</a>
             @if(auth()->id() === $comment->user_id)
             <button class="delete-comment" data-comment-id="{{ $comment->id }}">Delete</button>
@@ -49,7 +51,7 @@
             const commentForm = document.getElementById('comment-form');
             const commentList = document.getElementById('comment-list');
             const userId = {{ auth() -> id()
-        }}; 
+        }};
 
         commentForm.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -73,7 +75,8 @@
                                 commentLink.href = `/profile/${data.comment.user.id}`;
                                 commentLink.textContent = data.comment.user.name;
 
-                                newComment.appendChild(document.createTextNode(`${data.comment.comment_body} - `));
+                                newComment.appendChild(document.createTextNode
+                                    (`${data.comment.comment_body} - `));
                                 newComment.appendChild(commentLink);
 
                                 if (userId === data.comment.user.id) {
@@ -86,12 +89,14 @@
                                     newComment.appendChild(deleteButton);
                                 }
                             } else {
-                                console.error('User data is missing or invalid:', data.comment);
+                                console.error('User data is missing or invalid:',
+                                    data.comment);
                                 return;
                             }
                         } else {
-                            console.error('Comment data is missing or invalid:', data.comment);
-                            return; 
+                            console.error('Comment data is missing or invalid:',
+                                data.comment);
+                            return;
                         }
 
                         commentList.appendChild(newComment);
@@ -104,7 +109,8 @@
         });
 
         commentList.addEventListener('click', function (e) {
-            if (e.target.tagName === 'BUTTON' && e.target.classList.contains('delete-comment')) {
+            if (e.target.tagName === 'BUTTON' &&
+                e.target.classList.contains('delete-comment')) {
                 const commentId = e.target.dataset.commentId;
 
                 fetch(`{{ route('comments.destroy', '') }}/${commentId}`, {
@@ -143,4 +149,7 @@
 @else
 <p>You do not have permission to delete this post.</p>
 @endif
+<li>
+    <a href="{{ route('posts.index') }}">Back to Posts</a>
+</li>
 @endsection
