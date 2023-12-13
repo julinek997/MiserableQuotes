@@ -42,6 +42,8 @@ class CommentController extends Controller
         $comment->post_id = $request->input('post_id');
         $comment->save();
 
+        $comment->load('user');
+
         Notification::route('mail', $comment->post->user->email)
             ->notify(new CommentNotification($comment));
 
@@ -50,6 +52,7 @@ class CommentController extends Controller
             'comment' => $comment,
         ]);
     }
+
 
     /**
      * Display the specified resource.

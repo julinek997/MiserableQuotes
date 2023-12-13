@@ -49,7 +49,7 @@
             const commentForm = document.getElementById('comment-form');
             const commentList = document.getElementById('comment-list');
             const userId = {{ auth() -> id()
-        }}; // Pass the authenticated user ID to JavaScript
+        }}; 
 
         commentForm.addEventListener('submit', function (e) {
             e.preventDefault();
@@ -66,11 +66,32 @@
                 .then(data => {
                     if (data.success) {
                         const newComment = document.createElement('li');
-                        newComment.innerHTML = `${data.comment.comment_body} - <a href="/profile/${data.comment.user.id}">${data.comment.user.name}</a>`;
 
-                        // Include delete button if the authenticated user is the owner of the comment
-                        if (userId === data.comment.user.id) {
-                            newComment.innerHTML += ` <button class="delete-comment" data-comment-id="${data.comment.id}">Delete</button>`;
+                        if (data.comment && typeof data.comment === 'object') {
+                            if (data.comment.user && typeof data.comment.user === 'object') {
+                                const commentLink = document.createElement('a');
+                                commentLink.href = `/profile/${data.comment.user.id}`;
+                                commentLink.textContent = data.comment.user.name;
+
+                                newComment.appendChild(document.createTextNode(`${data.comment.comment_body} - `));
+                                newComment.appendChild(commentLink);
+
+                                if (userId === data.comment.user.id) {
+                                    const deleteButton = document.createElement('button');
+                                    deleteButton.className = 'delete-comment';
+                                    deleteButton.dataset.commentId = data.comment.id;
+                                    deleteButton.textContent = 'Delete';
+
+                                    newComment.appendChild(document.createTextNode(' '));
+                                    newComment.appendChild(deleteButton);
+                                }
+                            } else {
+                                console.error('User data is missing or invalid:', data.comment);
+                                return;
+                            }
+                        } else {
+                            console.error('Comment data is missing or invalid:', data.comment);
+                            return; 
                         }
 
                         commentList.appendChild(newComment);
@@ -80,10 +101,7 @@
                         console.error(data.error);
                     }
                 })
-                .catch(error => console.error(error));
         });
-
-        // Add this code inside the existing 'DOMContentLoaded' event listener
 
         commentList.addEventListener('click', function (e) {
             if (e.target.tagName === 'BUTTON' && e.target.classList.contains('delete-comment')) {
@@ -106,7 +124,8 @@
                     .catch(error => console.error(error));
             }
         });
-                });
+        });
+
     </script>
     @else
     <p>Please login to leave a comment.</p>
