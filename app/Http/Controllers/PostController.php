@@ -7,17 +7,30 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Services\WeatherService;
 
 
 class PostController extends Controller
 {
+
+    protected $weatherService;
+
+    public function __construct(WeatherService $weatherService)
+    {
+        $this->weatherService = $weatherService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        $apiKey = config('services.openweathermap.api_key');
+        $city = 'Swansea';
+        $weather = $this->weatherService->getCurrentWeather($city);
         $posts = Post::paginate(10);
-        return view('posts.index', ['posts' => $posts]);
+    
+        return view('posts.index', compact('posts', 'weather'));
     }
 
     /**
